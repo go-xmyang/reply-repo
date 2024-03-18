@@ -65,26 +65,20 @@ server {
     ssl_certificate_key /path/to/your/privatekey.pem;
 
     location / {
+        root /www/ipo/;
         # 根据UA进行判断，如果包含关键字 "Google Bot", 反向代理到 server_bot[bot.ipo.com] 去处理
         if ($http_user_agent ~* "Google Bot") {
             proxy_pass http://bot.ipo.com;
             break;
         }
-        try_files $uri $uri/ /index.html /public/index.html /api/landing;
+        try_files $uri $uri/ index.html public/index.html /api/landing;
     }
 
     location /api/ {
-        # 限流
-        limit_req zone=api_limit burst=3 nodelay;
-        limit_req_status 429;
-        try_files $uri @api;
-    }
-
-    location @api {
-        # /api/{name} 路径的请求通过unix sock发送到本地 php-fpm，文件映射 /www/api/{name}.php
+        limit_req zone=api_limit burst=2 nodelay;
         include fastcgi_params;
-        fastcgi_pass unix:/var/run/php-fpm.sock;
-        fastcgi_param SCRIPT_FILENAME /www/api/$name.php;
+        fastcgi_pass unix:/run/php-fpm/php-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
     }
 
     location /static/ {
