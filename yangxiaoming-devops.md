@@ -88,10 +88,18 @@ server {
     }
 
     location /static/ {
-        # 静态文件的一些优化配置，如开启 gzip、添加缓存等
-    }
+        # 开启gzip压缩
+        gzip on;
+        gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
 
-    # 其他配置，如 SSL 配置、日志配置等
+        # 添加缓存控制
+        expires 30d;
+
+        # 禁止访问隐藏文件
+        location ~* \.(?:bak|config|dist|fla|inc|ini|log|psd|sh|sql|swp|dist|fla|gz|json|xml)$ {
+            deny all;
+        }
+    }
 }
 
 # 限流配置
