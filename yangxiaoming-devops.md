@@ -105,3 +105,8 @@ server {
 # 限流配置
 limit_req_zone $binary_remote_addr zone=api_limit:10m rate=1.5r/s;
 ```
+#### 三、通过iptables进行Docker网络配置
+
+#### 四、生产环境数据库主从master服务器切换
+
+#### 五、Haproxy代理的MySQL Slave集群，偶尔会产生 SQLSTATE[HY000]: General error: 2006 MySQL server has gone away 的错误，请根据经验，给出一排查方案与可能的方向
