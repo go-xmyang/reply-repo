@@ -190,3 +190,9 @@ START SLAVE;
 
 
 ### 五、Haproxy代理的MySQL Slave集群，偶尔会产生 SQLSTATE[HY000]: General error: 2006 MySQL server has gone away 的错误，请根据经验，给出一排查方案与可能的方向
+> 参考了：https://stackoverflow.com/questions/40076644/mysql-server-has-gone-away-error-constantly-appearing-with-haproxy
+
+除了已经排查的方向，还可以检查下连接超时设置：
+
+MySQL wait_timeout 和 max_allowed_packet 参数：如果 wait_timeout 值设置得太低，连接可能会在应用程序尝试使用它之前超时。同样，如果查询需要传输的数据包超过 max_allowed_packet 的大小，连接也可能会被终止
+HAProxy 超时设置：检查 HAProxy 配置中的超时设置，如 timeout connect、timeout client 和 timeout server
