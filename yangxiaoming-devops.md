@@ -195,4 +195,5 @@ START SLAVE;
 除了已经排查的方向，还可以检查下连接超时设置：
 
 MySQL wait_timeout 和 max_allowed_packet 参数：如果 wait_timeout 值设置得太低，连接可能会在应用程序尝试使用它之前超时。同样，如果查询需要传输的数据包超过 max_allowed_packet 的大小，连接也可能会被终止
+
 HAProxy 超时设置：检查 HAProxy 配置中的超时设置，如 timeout connect、timeout client 和 timeout server
