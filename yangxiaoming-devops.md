@@ -158,5 +158,35 @@ iptables-save > /etc/iptables/rules.v4
 ```
 
 ### 四、生产环境数据库主从master服务器切换
+我的思路如下：
+1. 首先配置 slave_01 和 master 配置为主主架构（互为主从）
+2. 将 slave_01，02，04 从 Haproxy[mysql-slave.ipo.com] 中删除：此时客户端只从 slave03 中读取数据
+3. 将mysql-master.ipo.com解析到slave_01：此时数据只会写到slave_01，并且同步到slave_03和master
+
+> 重要：考虑到客户端DNS生效，这一步可以等待一段时间确认解析生效后再执行下一步操作，防止客户端还在往master写数据
+
+4. 将 slave_01 停止从 master 复制数据，改为从 slave_03 同步数据：此时数据只会写到 slave_01，并且同步到 slave_03 再同步到 master
+5. 将 slave_02 的主库改为 slave_01 ：此时数据只会写到 slave_01，并且同步到 slave_02 再同步到 slave_04
+6. 将 master，slave_02,04 加入 Haproxy[mysql-slave.ipo.com] 代理中：此时客户端写数据到 slave_01 ，读取数据到 master slave_03 slave_02 slave_04
+7. 至此完成切换
+涉及到的关键命令有：
+```bash
+# 查看主从库状态
+SHOW MASTER STATUS;
+SHOW SLAVE STATUS\G
+
+# 停止同步
+STOP SLAVE;
+
+# 修改master
+CHANGE MASTER TO
+    MASTER_HOST='slave01_IP',
+    MASTER_USER='replication_user',
+    MASTER_PASSWORD='replication_password',
+    MASTER_LOG_FILE='binlog_file_from_slave01',
+    MASTER_LOG_POS=binlog_position_from_slave01;
+START SLAVE;
+```
+
 
 ### 五、Haproxy代理的MySQL Slave集群，偶尔会产生 SQLSTATE[HY000]: General error: 2006 MySQL server has gone away 的错误，请根据经验，给出一排查方案与可能的方向
