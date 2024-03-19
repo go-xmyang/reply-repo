@@ -1,7 +1,7 @@
 您好，以下是我关于[运维问卷](https://github.com/housesigma/hr-interview/blob/main/DevOps.md)的回答。
 > 由于篇幅原因，这里不再写完整的题目内容，只通过标题来区分
 >
-> 这些题目参考了ChatGPT
+> 这些题目参考了ChatGPT和一些互联网资源
 
 ### 一、写一个定时执行的Bash脚本，每月的一号凌晨1点 对 MongoDB 中 test.user_logs 表进行备份、清理
 > 这个脚本假设MongoDB 已经配置好，并且服务器上已经安装了必要的工具（如 mongodump 等）
